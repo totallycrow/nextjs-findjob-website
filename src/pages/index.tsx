@@ -9,8 +9,23 @@ import { request, gql } from "graphql-request";
 const endpoint = "https://api.graphql.jobs/";
 const FILMS_QUERY = gql`
   {
+    cities {
+      name
+    }
     jobs {
       id
+      title
+      company {
+        name
+      }
+      postedAt
+      slug
+      cities {
+        name
+      }
+      countries {
+        name
+      }
     }
   }
 `;
@@ -25,6 +40,8 @@ const Home: NextPage = () => {
     },
   });
 
+  console.log(data);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <pre>{error.message}</pre>;
 
@@ -33,13 +50,13 @@ const Home: NextPage = () => {
       <h1>Location</h1>
 
       <div>
-        <DebouncedSearch />
+        <DebouncedSearch data={data} />
       </div>
       <div>
         <h1>Test</h1>
         <ul>
-          {data.jobs.map((launch) => (
-            <li key={launch.id}>{launch.id}</li>
+          {data.cities.map((launch) => (
+            <li key={launch.name}>{launch.name}</li>
           ))}
         </ul>
       </div>
