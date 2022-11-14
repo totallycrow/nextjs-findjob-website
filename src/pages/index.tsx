@@ -54,11 +54,11 @@ const Home: NextPage = () => {
       </div>
       <div>
         <h1>Test</h1>
-        <ul>
+        {/* <ul>
           {data.cities.map((launch) => (
             <li key={launch.name}>{launch.name}</li>
           ))}
-        </ul>
+        </ul> */}
       </div>
     </div>
   );
