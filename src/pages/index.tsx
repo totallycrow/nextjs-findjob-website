@@ -2,18 +2,46 @@ import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { DebouncedSearchInput } from "../components/debouncedSearchInput/DebouncedSearchInput";
+import { DebouncedSearch } from "../components/debouncedSearchInput/DebouncedSearch";
 import styles from "../styles/Home.module.css";
+import { request, gql } from "graphql-request";
+
+const endpoint = "https://api.graphql.jobs/";
+const FILMS_QUERY = gql`
+  {
+    jobs {
+      id
+    }
+  }
+`;
 
 const Home: NextPage = () => {
-  const { data } = useQuery({ queryKey: ["posts"], queryFn: getPosts });
+  // const { data } = useQuery({ queryKey: ["posts"], queryFn: getPosts });
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["launches"],
+    queryFn: () => {
+      return request(endpoint, FILMS_QUERY);
+    },
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <pre>{error.message}</pre>;
 
   return (
     <div>
-      <h1>Home</h1>
+      <h1>Location</h1>
 
       <div>
-        <DebouncedSearchInput />
+        <DebouncedSearch />
+      </div>
+      <div>
+        <h1>Test</h1>
+        <ul>
+          {data.jobs.map((launch) => (
+            <li key={launch.id}>{launch.id}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -24,7 +52,11 @@ export default Home;
 export async function getStaticProps() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["posts"], getPosts);
+  await queryClient.prefetchQuery(["launches"], () => {
+    return request(endpoint, FILMS_QUERY);
+  });
+
+  console.log(queryClient);
 
   return {
     props: {
