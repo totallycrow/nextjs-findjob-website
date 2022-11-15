@@ -1,8 +1,7 @@
+import React from "react";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import React from "react";
 import { request, gql } from "graphql-request";
-import Link from "next/link";
 
 const endpoint = "https://api.graphql.jobs/";
 const FILMS_QUERY = gql`
@@ -32,9 +31,9 @@ const FILMS_QUERY = gql`
   }
 `;
 
-const City = () => {
+export const Job = () => {
   const router = useRouter();
-  const { slug } = router.query;
+  const { id } = router.query;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["launches"],
@@ -45,30 +44,25 @@ const City = () => {
 
   console.log(data);
 
-  if (!slug || Array.isArray(slug)) return;
-  console.log(slug.toLowerCase());
-  console.log(data.jobs[1].cities[0].name.toLowerCase());
+  if (!id || Array.isArray(id)) return;
 
   const filteredData = data.jobs.filter((job: any) => {
-    if (job.cities[0] === undefined) return false;
+    if (job.id === undefined) return false;
 
-    return job.cities[0].name.toLowerCase() === slug.toLowerCase();
+    return job.id === id;
   });
 
   console.log(filteredData);
 
   return (
     <div>
-      <h2>{slug}</h2>
+      <h2>{id}</h2>
 
       <div>
         {" "}
         {filteredData.map((job) => (
           <li key={job.id}>
-            <Link href={`/jobs/${job.id}`}>
-              {" "}
-              {job.title} | {job.company.name}
-            </Link>
+            {job.title} | {job.company.name}
           </li>
         ))}
       </div>
@@ -76,7 +70,7 @@ const City = () => {
   );
 };
 
-export default City;
+export default Job;
 
 export async function getStaticProps() {
   const queryClient = new QueryClient();
@@ -107,10 +101,10 @@ export async function getStaticPaths() {
   console.log("static paths");
   console.log(data.cities);
 
-  const paths = data.cities.map((city: any) => {
+  const paths = data.jobs.map((job: any) => {
     return {
       params: {
-        slug: city.slug,
+        id: job.id,
       },
     };
   });

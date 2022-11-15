@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import request, { gql } from "graphql-request";
+import Link from "next/link";
 import React from "react";
 
 const endpoint = "https://api.graphql.jobs/";
@@ -29,6 +30,11 @@ const FILMS_QUERY = gql`
   }
 `;
 
+interface IJobListOptions {
+  tag: string;
+  city: string;
+}
+
 export const JobList = ({ filter }: { filter: string }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["launches"],
@@ -55,7 +61,11 @@ export const JobList = ({ filter }: { filter: string }) => {
         <ul>
           {featuredJobs.map((job) => (
             <li key={job.id}>
-              {job.title} | {job.company.name}
+              {" "}
+              <Link href={`/jobs/${job.id}`}>
+                {" "}
+                {job.title} | {job.company.name}
+              </Link>
             </li>
           ))}
         </ul>
@@ -63,5 +73,17 @@ export const JobList = ({ filter }: { filter: string }) => {
     );
   }
 
-  return <div>{filteredData.map((item: any) => item.title)}</div>;
+  return (
+    <div>
+      {filteredData.map((item: any) => (
+        <li key={item.id}>
+          {" "}
+          <Link href={`/jobs/${item.id}`}>
+            {" "}
+            {item.title} | {item.company.name}
+          </Link>
+        </li>
+      ))}
+    </div>
+  );
 };
