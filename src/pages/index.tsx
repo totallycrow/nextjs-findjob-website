@@ -5,17 +5,23 @@ import Image from "next/image";
 import { DebouncedSearch } from "../components/debouncedSearchInput/DebouncedSearch";
 import styles from "../styles/Home.module.css";
 import { request, gql } from "graphql-request";
+import { useState } from "react";
+import { JobList } from "../components/JobList/JobList";
 
 const endpoint = "https://api.graphql.jobs/";
 const FILMS_QUERY = gql`
   {
     cities {
       name
+      slug
     }
     jobs {
       id
       title
       company {
+        name
+      }
+      tags {
         name
       }
       postedAt
@@ -32,6 +38,7 @@ const FILMS_QUERY = gql`
 
 const Home: NextPage = () => {
   // const { data } = useQuery({ queryKey: ["posts"], queryFn: getPosts });
+  const [filter, setFilter] = useState("recent");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["launches"],
@@ -41,9 +48,17 @@ const Home: NextPage = () => {
   });
 
   console.log(data);
+  console.log(filter);
+
+  const handleFilterChange = (filter: string) => {
+    console.log(filter);
+    setFilter(filter);
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <pre>{error.message}</pre>;
+
+  const featuredJobs = data.jobs.slice(0, 5);
 
   return (
     <div>
@@ -54,12 +69,15 @@ const Home: NextPage = () => {
       </div>
       <div>
         <h1>Test</h1>
-        {/* <ul>
-          {data.cities.map((launch) => (
-            <li key={launch.name}>{launch.name}</li>
-          ))}
-        </ul> */}
+        <div>
+          <button onClick={() => handleFilterChange("recent")}>Recent</button>
+          <button onClick={() => handleFilterChange("React")}>React</button>
+          <button onClick={() => handleFilterChange("TypeScript")}>
+            TypeScript
+          </button>
+        </div>
       </div>
+      <JobList filter={filter} />
     </div>
   );
 };
@@ -70,6 +88,9 @@ export async function getStaticProps() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery(["launches"], () => {
+    return request(endpoint, FILMS_QUERY);
+  });
+  await queryClient.prefetchQuery(["launches-2"], () => {
     return request(endpoint, FILMS_QUERY);
   });
 
