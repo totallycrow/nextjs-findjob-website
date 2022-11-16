@@ -71,3 +71,18 @@ export const JOB_QUERY = gql`
     }
   }
 `;
+
+
+// job(input: {
+//     jobSlug:"senior-fullstack-engineer-platform"
+//     companySlug:"segment"
+//   }) {
+//     title
+//     slug
+//     id
+//     isFeatured
+//     postedAt
+//     company{
+//       slug
+//     }
+//   }
