@@ -35,7 +35,7 @@ export const DebouncedSearch = ({}) => {
   const { debouncedTerm, isLoading } = useDebounce(searchTerm, 1000);
 
   const { data } = useQuery({
-    queryKey: ["launches"],
+    queryKey: ["featured"],
     queryFn: () => {
       return request(endpoint, FILMS_QUERY);
     },
@@ -82,18 +82,18 @@ export const DebouncedSearch = ({}) => {
   );
 };
 
-export async function getStaticProps() {
-  const queryClient = new QueryClient();
+// export async function getStaticProps() {
+//   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["launches"], () => {
-    return request(endpoint, FILMS_QUERY);
-  });
+//   await queryClient.prefetchQuery(["launches"], () => {
+//     return request(endpoint, FILMS_QUERY);
+//   });
 
-  console.log(queryClient);
+//   console.log(queryClient);
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-}
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient),
+//     },
+//   };
+// }

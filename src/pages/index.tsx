@@ -20,6 +20,7 @@ const FILMS_QUERY = gql`
       title
       company {
         name
+        slug
       }
       tags {
         name
@@ -41,7 +42,7 @@ const Home: NextPage = () => {
   const [filter, setFilter] = useState("recent");
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["launches"],
+    queryKey: ["featured"],
     queryFn: () => {
       return request(endpoint, FILMS_QUERY);
     },
@@ -87,7 +88,7 @@ export default Home;
 export async function getStaticProps() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["launches"], () => {
+  await queryClient.prefetchQuery(["featured"], () => {
     return request(endpoint, FILMS_QUERY);
   });
 

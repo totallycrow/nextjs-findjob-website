@@ -14,6 +14,7 @@ const FILMS_QUERY = gql`
       title
       company {
         name
+        slug
       }
       tags {
         name
@@ -37,7 +38,7 @@ interface IJobListOptions {
 
 export const JobList = ({ filter }: { filter: string }) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["launches"],
+    queryKey: ["featured"],
     queryFn: () => {
       return request(endpoint, FILMS_QUERY);
     },
@@ -62,7 +63,7 @@ export const JobList = ({ filter }: { filter: string }) => {
           {featuredJobs.map((job) => (
             <li key={job.id}>
               {" "}
-              <Link href={`/jobs/${job.id}`}>
+              <Link href={`/${job.company.slug}/${job.slug}`}>
                 {" "}
                 {job.title} | {job.company.name}
               </Link>
