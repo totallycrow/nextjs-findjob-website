@@ -78,9 +78,6 @@ export async function getStaticProps() {
   await queryClient.prefetchQuery(["launches"], () => {
     return request(endpoint, FILMS_QUERY);
   });
-  await queryClient.prefetchQuery(["launches-2"], () => {
-    return request(endpoint, FILMS_QUERY);
-  });
 
   console.log(queryClient);
 
