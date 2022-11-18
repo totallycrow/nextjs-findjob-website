@@ -1,9 +1,6 @@
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
 import { DebouncedSearch } from "../components/debouncedSearchInput/DebouncedSearch";
-import styles from "../styles/Home.module.css";
 import { request, gql } from "graphql-request";
 import { useState } from "react";
 import { JobList } from "../components/JobList/JobList";
@@ -19,7 +16,6 @@ const FILMS_QUERY = gql`
       id
       title
       company {
-        name
         slug
       }
       tags {

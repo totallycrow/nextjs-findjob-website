@@ -15,7 +15,7 @@ const FILMS_QUERY = gql`
       id
       title
       company {
-        name
+        slug
       }
       tags {
         name
@@ -65,7 +65,7 @@ const City = () => {
         {" "}
         {filteredData.map((job) => (
           <li key={job.id}>
-            <Link href={`/jobs/${job.id}`}>
+            <Link href={`/${job.company.slug}/${job.slug}`}>
               {" "}
               {job.title} | {job.company.name}
             </Link>

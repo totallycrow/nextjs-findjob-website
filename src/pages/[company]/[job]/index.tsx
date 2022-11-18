@@ -25,7 +25,7 @@ export default index;
 export async function getStaticProps() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["launches"], () => {
+  await queryClient.prefetchQuery(["pages"], () => {
     return request(endpoint, FILMS_QUERY);
   });
 

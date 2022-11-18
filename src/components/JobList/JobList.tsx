@@ -13,7 +13,6 @@ const FILMS_QUERY = gql`
       id
       title
       company {
-        name
         slug
       }
       tags {

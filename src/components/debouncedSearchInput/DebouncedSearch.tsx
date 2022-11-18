@@ -2,18 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useDebounce } from "./useDebounce";
 import { request, gql } from "graphql-request";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 const endpoint = "https://api.graphql.jobs/";
 const FILMS_QUERY = gql`
   {
     cities {
       name
+      slug
     }
     jobs {
       id
       title
       company {
-        name
+        slug
       }
       tags {
         name
@@ -73,7 +75,11 @@ export const DebouncedSearch = ({}) => {
       <div>
         {debouncedTerm &&
           data &&
-          cities.map((city: any) => <div key={city.name}>{city.name}</div>)}
+          cities.map((city: any) => (
+            <div key={city.name}>
+              <Link href={`/locations/${city.slug}`}>{city.name} </Link>
+            </div>
+          ))}
       </div>
 
       <div>{isLoading === true ? <div>Loading</div> : debouncedTerm}</div>
