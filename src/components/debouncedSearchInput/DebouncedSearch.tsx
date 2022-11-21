@@ -3,47 +3,43 @@ import { useDebounce } from "./useDebounce";
 import { request, gql } from "graphql-request";
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-
-const endpoint = "https://api.graphql.jobs/";
-const FILMS_QUERY = gql`
-  {
-    cities {
-      name
-      slug
-    }
-    jobs {
-      id
-      title
-      company {
-        slug
-      }
-      tags {
-        name
-      }
-      postedAt
-      slug
-      cities {
-        name
-      }
-      countries {
-        name
-      }
-    }
-  }
-`;
+import {
+  endpoint,
+  CITIES,
+  ALL_JOBS,
+  JOBS_KEY,
+  CITIES_KEY,
+} from "../../services/queries";
+import { IName, INameSlug, useGetJobs } from "../../services/useGetJobs";
+import { ICityData, useGetCities } from "../../services/useGetCities";
+import { useFilter } from "../../hooks/useFilter";
 
 export const DebouncedSearch = ({}) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const { debouncedTerm, isLoading } = useDebounce(searchTerm, 1000);
 
-  const { data } = useQuery({
-    queryKey: ["featured"],
-    queryFn: () => {
-      return request(endpoint, FILMS_QUERY);
-    },
-  });
+  const data = useGetCities(CITIES_KEY);
+  //
+  // useEffect(() => {
+  //   console.log("Use Effect");
+  //   console.log(debouncedTerm);
+  //   console.log(isLoading);
+  //   console.log(data);
+  // }, [searchTerm, debouncedTerm, isLoading]);
 
-  const cities = data.cities.filter((city: string) => {
+  console.log(data.data);
+
+  if (data.error instanceof Error) return <pre>{data.error.message}</pre>;
+  if (data.data instanceof Error) return <div>Error fetching data</div>;
+  if (!data.data) return <div>Error fetching data</div>;
+
+  const cities = data.data.cities;
+
+  console.log("CITIES");
+  console.log(cities);
+
+  const filteredCities = cities.filter((city: INameSlug) => {
+    if (!debouncedTerm) return false;
     return city.name.toLowerCase().includes(debouncedTerm);
   });
 
@@ -56,14 +52,6 @@ export const DebouncedSearch = ({}) => {
   console.log("SEARCH TERM");
   console.log(searchTerm);
 
-  //
-  useEffect(() => {
-    console.log("Use Effect");
-    console.log(debouncedTerm);
-    console.log(isLoading);
-    console.log(data);
-  }, [searchTerm, debouncedTerm, isLoading]);
-
   return (
     <div>
       <input
@@ -75,7 +63,7 @@ export const DebouncedSearch = ({}) => {
       <div>
         {debouncedTerm &&
           data &&
-          cities.map((city: any) => (
+          filteredCities.map((city: INameSlug) => (
             <div key={city.name}>
               <Link href={`/locations/${city.slug}`}>{city.name} </Link>
             </div>

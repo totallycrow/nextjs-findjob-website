@@ -4,65 +4,33 @@ import { DebouncedSearch } from "../components/debouncedSearchInput/DebouncedSea
 import { request, gql } from "graphql-request";
 import { useState } from "react";
 import { JobList } from "../components/JobList/JobList";
-
-const endpoint = "https://api.graphql.jobs/";
-const FILMS_QUERY = gql`
-  {
-    cities {
-      name
-      slug
-    }
-    jobs {
-      id
-      title
-      company {
-        slug
-      }
-      tags {
-        name
-      }
-      postedAt
-      slug
-      cities {
-        name
-      }
-      countries {
-        name
-      }
-    }
-  }
-`;
+import {
+  endpoint,
+  CITIES,
+  ALL_JOBS,
+  JOBS_KEY,
+  CITIES_KEY,
+} from "../services/queries";
+import { useGetJobs } from "../services/useGetJobs";
+import { useFilter } from "../hooks/useFilter";
 
 const Home: NextPage = () => {
   // const { data } = useQuery({ queryKey: ["posts"], queryFn: getPosts });
-  const [filter, setFilter] = useState("recent");
+  const jobs = useGetJobs(JOBS_KEY);
+  const { filter, handleFilterChange } = useFilter();
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["featured"],
-    queryFn: () => {
-      return request(endpoint, FILMS_QUERY);
-    },
-  });
+  // if (jobs.isLoading) return <div>Loading...</div>;
+  if (jobs.error instanceof Error) return <pre>{jobs.error.message}</pre>;
+  console.log(jobs.data);
 
-  console.log(data);
-  console.log(filter);
-
-  const handleFilterChange = (filter: string) => {
-    console.log(filter);
-    setFilter(filter);
-  };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <pre>{error.message}</pre>;
-
-  const featuredJobs = data.jobs.slice(0, 5);
+  // const featuredJobs = data.jobs.slice(0, 5);
 
   return (
     <div>
       <h1>Location</h1>
 
       <div>
-        <DebouncedSearch data={data} />
+        <DebouncedSearch />{" "}
       </div>
       <div>
         <h1>Test</h1>
@@ -81,14 +49,17 @@ const Home: NextPage = () => {
 
 export default Home;
 
+// ****************** STATIC PROPS ******************
+
 export async function getStaticProps() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["featured"], () => {
-    return request(endpoint, FILMS_QUERY);
+  await queryClient.prefetchQuery([JOBS_KEY], () => {
+    return request(endpoint, ALL_JOBS);
   });
-
-  console.log(queryClient);
+  await queryClient.prefetchQuery([CITIES_KEY], () => {
+    return request(endpoint, CITIES);
+  });
 
   return {
     props: {

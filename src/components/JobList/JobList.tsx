@@ -2,33 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import request, { gql } from "graphql-request";
 import Link from "next/link";
 import React from "react";
-
-const endpoint = "https://api.graphql.jobs/";
-const FILMS_QUERY = gql`
-  {
-    cities {
-      name
-    }
-    jobs {
-      id
-      title
-      company {
-        slug
-      }
-      tags {
-        name
-      }
-      postedAt
-      slug
-      cities {
-        name
-      }
-      countries {
-        name
-      }
-    }
-  }
-`;
+import {
+  endpoint,
+  CITIES,
+  ALL_JOBS,
+  JOBS_KEY,
+  CITIES_KEY,
+} from "../../services/queries";
+import { useGetJobs } from "../../services/useGetJobs";
+import { IJob } from "../../services/useGetJobs";
 
 interface IJobListOptions {
   tag: string;
@@ -36,17 +18,19 @@ interface IJobListOptions {
 }
 
 export const JobList = ({ filter }: { filter: string }) => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["featured"],
-    queryFn: () => {
-      return request(endpoint, FILMS_QUERY);
-    },
-  });
+  const queryData = useGetJobs(JOBS_KEY);
 
-  const filteredData = data.jobs.filter((job: any) => {
-    return job.tags.some((element: any) => {
-      console.log(element.name);
-      console.log(filter);
+  // const { data, isLoading, error } = useQuery({
+  //   queryKey: ["featured"],
+  //   queryFn: () => {
+  //     return request(endpoint, FILMS_QUERY);
+  //   },
+  // });
+
+  if (!queryData.data) return <div>Error fetching data</div>;
+
+  const filteredData = queryData.data.jobs.filter((job: IJob) => {
+    return job.tags.some((element) => {
       return element.name === filter;
     });
   });
@@ -55,11 +39,11 @@ export const JobList = ({ filter }: { filter: string }) => {
   console.log(filteredData);
 
   if (filter === "recent") {
-    const featuredJobs = data.jobs.slice(0, 5);
+    const featuredJobs = queryData.data.jobs.slice(0, 5);
     return (
       <div>
         <ul>
-          {featuredJobs.map((job) => (
+          {featuredJobs.map((job: IJob) => (
             <li key={job.id}>
               {" "}
               <Link href={`/${job.company.slug}/${job.slug}`}>
@@ -75,7 +59,7 @@ export const JobList = ({ filter }: { filter: string }) => {
 
   return (
     <div>
-      {filteredData.map((item: any) => (
+      {filteredData.map((item: IJob) => (
         <li key={item.id}>
           {" "}
           <Link href={`/jobs/${item.id}`}>

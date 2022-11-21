@@ -2,35 +2,18 @@ import { gql } from "graphql-request";
 
 export const endpoint = "https://api.graphql.jobs/";
 
-export const CITIES_QUERY = gql`
+export const CITIES_KEY = "cities";
+export const CITIES = gql`
   {
     cities {
       name
       slug
     }
-    jobs {
-      id
-      title
-      company {
-        name
-        slug
-      }
-      tags {
-        name
-      }
-      postedAt
-      slug
-      cities {
-        name
-      }
-      countries {
-        name
-      }
-    }
   }
 `;
 
-export const ALL_JOBS_QUERY = gql`
+export const JOBS_KEY = "jobs";
+export const ALL_JOBS = gql`
   {
     jobs {
       id
@@ -41,6 +24,7 @@ export const ALL_JOBS_QUERY = gql`
       slug
       company {
         slug
+        name
       }
       cities {
         name
@@ -72,7 +56,6 @@ export const JOB_QUERY = gql`
   }
 `;
 
-
 // job(input: {
 //     jobSlug:"senior-fullstack-engineer-platform"
 //     companySlug:"segment"
@@ -86,3 +69,31 @@ export const JOB_QUERY = gql`
 //       slug
 //     }
 //   }
+
+// export const CITIES_QUERY = gql`
+//   {
+//     cities {
+//       name
+//       slug
+//     }
+//     jobs {
+//       id
+//       title
+//       company {
+//         name
+//         slug
+//       }
+//       tags {
+//         name
+//       }
+//       postedAt
+//       slug
+//       cities {
+//         name
+//       }
+//       countries {
+//         name
+//       }
+//     }
+//   }
+// `;
