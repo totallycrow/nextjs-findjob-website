@@ -18,7 +18,7 @@ export const DebouncedSearch = ({}) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const { debouncedTerm, isLoading } = useDebounce(searchTerm, 1000);
 
-  const data = useGetCities(CITIES_KEY);
+  const queryData = useGetCities(CITIES_KEY);
   //
   // useEffect(() => {
   //   console.log("Use Effect");
@@ -27,13 +27,14 @@ export const DebouncedSearch = ({}) => {
   //   console.log(data);
   // }, [searchTerm, debouncedTerm, isLoading]);
 
-  console.log(data.data);
+  console.log(queryData.data);
 
-  if (data.error instanceof Error) return <pre>{data.error.message}</pre>;
-  if (data.data instanceof Error) return <div>Error fetching data</div>;
-  if (!data.data) return <div>Error fetching data</div>;
+  if (queryData.error instanceof Error)
+    return <pre>{queryData.error.message}</pre>;
+  if (queryData.data instanceof Error) return <div>Error fetching data</div>;
+  if (!queryData.data) return <div>Error fetching data</div>;
 
-  const cities = data.data.cities;
+  const cities = queryData.data.cities;
 
   console.log("CITIES");
   console.log(cities);
@@ -62,7 +63,7 @@ export const DebouncedSearch = ({}) => {
 
       <div>
         {debouncedTerm &&
-          data &&
+          queryData &&
           filteredCities.map((city: INameSlug) => (
             <div key={city.name}>
               <Link href={`/locations/${city.slug}`}>{city.name} </Link>
