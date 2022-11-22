@@ -11,8 +11,6 @@ import {
 import { IJobsData } from "../../../services/useGetJobs";
 
 export const index = (props: any) => {
-  console.log("************************************** component");
-  console.log(props.data);
   const data = props.data;
   return <div>{data[0].slug}</div>;
 };
@@ -27,12 +25,7 @@ export async function getStaticProps(context: any) {
   await queryClient.prefetchQuery([JOBS_KEY], () => {
     return request(endpoint, ALL_JOBS);
   });
-  console.log("///////////////////////////////////////////");
-  console.log(jobSlug);
-  console.log(params);
-  console.log(company);
 
-  console.log(queryClient);
   const jobsData = queryClient.getQueryData<IJobsData>([JOBS_KEY]);
   console.log(jobsData);
 
@@ -74,8 +67,6 @@ export async function getStaticPaths() {
       },
     };
   });
-
-  console.log(paths);
 
   return {
     paths: paths,

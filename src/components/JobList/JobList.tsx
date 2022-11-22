@@ -2,30 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import request, { gql } from "graphql-request";
 import Link from "next/link";
 import React from "react";
-import {
-  endpoint,
-  CITIES,
-  ALL_JOBS,
-  JOBS_KEY,
-  CITIES_KEY,
-} from "../../services/queries";
+import { JOBS_KEY } from "../../services/queries";
 import { useGetJobs } from "../../services/useGetJobs";
 import { IJob } from "../../services/useGetJobs";
 
-interface IJobListOptions {
-  tag: string;
-  city: string;
-}
-
 export const JobList = ({ filter }: { filter: string }) => {
   const queryData = useGetJobs(JOBS_KEY);
-
-  // const { data, isLoading, error } = useQuery({
-  //   queryKey: ["featured"],
-  //   queryFn: () => {
-  //     return request(endpoint, FILMS_QUERY);
-  //   },
-  // });
 
   if (!queryData.data) return <div>Error fetching data</div>;
 
@@ -34,9 +16,6 @@ export const JobList = ({ filter }: { filter: string }) => {
       return element.name === filter;
     });
   });
-
-  console.log("FILTERED DATA");
-  console.log(filteredData);
 
   if (filter === "recent") {
     const featuredJobs = queryData.data.jobs.slice(0, 5);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const useDebounce = (
   inputValue: string | undefined,
@@ -22,8 +22,6 @@ export const useDebounce = (
       }, timeOutValue);
 
       // Cancel the timeout if value changes (also on delay change or unmount)
-      // This is how we prevent debounced value from updating if value is changed ...
-      // .. within the delay period. Timeout gets cleared and restarted.
       return () => {
         clearTimeout(handler);
       };

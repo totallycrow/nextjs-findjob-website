@@ -1,12 +1,6 @@
-import {
-  dehydrate,
-  DehydratedState,
-  QueryClient,
-  useQuery,
-} from "@tanstack/react-query";
-import { useRouter } from "next/router";
+import { dehydrate, DehydratedState, QueryClient } from "@tanstack/react-query";
 import React from "react";
-import { request, gql } from "graphql-request";
+import { request } from "graphql-request";
 import Link from "next/link";
 import {
   endpoint,
@@ -15,10 +9,9 @@ import {
   JOBS_KEY,
   CITIES_KEY,
 } from "../../services/queries";
-import { useGetJobs, IJobsData, IJob } from "../../services/useGetJobs";
-import { ICityData, useGetCities } from "../../services/useGetCities";
+import { IJobsData, IJob } from "../../services/useGetJobs";
+import { ICityData } from "../../services/useGetCities";
 import { GetStaticProps } from "next";
-
 import { ParsedUrlQuery } from "querystring";
 
 const City: React.FC<Props> = (props) => {
@@ -58,6 +51,7 @@ interface Params extends ParsedUrlQuery {
 
 export default City;
 
+// ****************** STATIC PROPS ******************
 export const getStaticProps: GetStaticProps<Props, Params> = async (
   context
 ) => {
@@ -89,6 +83,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (
   };
 };
 
+// ****************** STATIC PATHS ******************
 export async function getStaticPaths() {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery([CITIES_KEY], () => {
