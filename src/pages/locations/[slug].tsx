@@ -1,61 +1,31 @@
-import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
+import {
+  dehydrate,
+  DehydratedState,
+  QueryClient,
+  useQuery,
+} from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React from "react";
 import { request, gql } from "graphql-request";
 import Link from "next/link";
+import {
+  endpoint,
+  CITIES,
+  ALL_JOBS,
+  JOBS_KEY,
+  CITIES_KEY,
+} from "../../services/queries";
+import { useGetJobs, IJobsData, IJob } from "../../services/useGetJobs";
+import { ICityData, useGetCities } from "../../services/useGetCities";
+import { GetStaticProps } from "next";
 
-const endpoint = "https://api.graphql.jobs/";
-const FILMS_QUERY = gql`
-  {
-    cities {
-      name
-      slug
-    }
-    jobs {
-      id
-      title
-      company {
-        slug
-      }
-      tags {
-        name
-      }
-      postedAt
-      slug
-      cities {
-        name
-      }
-      countries {
-        name
-      }
-    }
-  }
-`;
+import { ParsedUrlQuery } from "querystring";
 
-const City = () => {
-  const router = useRouter();
-  const { slug } = router.query;
+const City: React.FC<Props> = (props) => {
+  const filteredData = props.jobsInCity;
+  const slug = props.slug;
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["launches"],
-    queryFn: () => {
-      return request(endpoint, FILMS_QUERY);
-    },
-  });
-
-  console.log(data);
-
-  if (!slug || Array.isArray(slug)) return;
-  console.log(slug.toLowerCase());
-  console.log(data.jobs[1].cities[0].name.toLowerCase());
-
-  const filteredData = data.jobs.filter((job: any) => {
-    if (job.cities[0] === undefined) return false;
-
-    return job.cities[0].name.toLowerCase() === slug.toLowerCase();
-  });
-
-  console.log(filteredData);
+  if (!filteredData) return <div>No Jobs Found</div>;
 
   return (
     <div>
@@ -63,7 +33,7 @@ const City = () => {
 
       <div>
         {" "}
-        {filteredData.map((job) => (
+        {filteredData.map((job: any) => (
           <li key={job.id}>
             <Link href={`/${job.company.slug}/${job.slug}`}>
               {" "}
@@ -76,43 +46,65 @@ const City = () => {
   );
 };
 
+interface Props {
+  slug: string;
+  jobsInCity: IJob[];
+  dehydratedState: DehydratedState;
+}
+
+interface Params extends ParsedUrlQuery {
+  slug: string;
+}
+
 export default City;
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps<Props, Params> = async (
+  context
+) => {
   const queryClient = new QueryClient();
+  const params = context.params!;
+  const { slug } = params;
 
-  await queryClient.prefetchQuery(["launches"], () => {
-    return request(endpoint, FILMS_QUERY);
+  await queryClient.prefetchQuery([JOBS_KEY], () => {
+    return request(endpoint, ALL_JOBS);
   });
+  await queryClient.prefetchQuery([CITIES_KEY], () => {
+    return request(endpoint, CITIES);
+  });
+  const jobsData = queryClient.getQueryData<IJobsData>([JOBS_KEY]);
+  if (!jobsData) return;
 
-  console.log(queryClient);
+  const filteredData = jobsData.jobs.filter((job) => {
+    if (job.cities[0] === undefined) return false;
+
+    return job.cities[0].name.toLowerCase() === slug.toLowerCase();
+  });
 
   return {
     props: {
+      jobsInCity: filteredData,
+      slug: slug,
       dehydratedState: dehydrate(queryClient),
     },
   };
-}
+};
 
 export async function getStaticPaths() {
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery(["launches"], () => {
-    return request(endpoint, FILMS_QUERY);
+  await queryClient.prefetchQuery([CITIES_KEY], () => {
+    return request(endpoint, CITIES);
   });
-  const data = queryClient.getQueryData(["launches"]);
+  const data = queryClient.getQueryData<ICityData>([CITIES_KEY]);
 
-  console.log("static paths");
-  console.log(data.cities);
+  if (!data) return;
 
-  const paths = data.cities.map((city: any) => {
+  const paths = data.cities.map((city) => {
     return {
       params: {
         slug: city.slug,
       },
     };
   });
-
-  console.log(paths);
 
   return {
     paths: paths,

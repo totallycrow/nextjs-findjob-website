@@ -34,7 +34,7 @@ export const DebouncedSearch = ({}) => {
   if (queryData.data instanceof Error) return <div>Error fetching data</div>;
   if (!queryData.data) return <div>Error fetching data</div>;
 
-  const cities = queryData.data.cities;
+  const cities: INameSlug[] = queryData.data.cities;
 
   console.log("CITIES");
   console.log(cities);

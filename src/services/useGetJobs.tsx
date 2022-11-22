@@ -43,6 +43,10 @@ export interface IJob {
   tags: Array<IName>;
 }
 
+export interface IJobsData {
+  jobs: Array<IJob>;
+}
+
 export interface IJobsQuery {
   data: {
     jobs: Array<IJob>;

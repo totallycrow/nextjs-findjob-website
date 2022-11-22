@@ -1,8 +1,7 @@
 import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
 import type { NextPage } from "next";
 import { DebouncedSearch } from "../components/debouncedSearchInput/DebouncedSearch";
-import { request, gql } from "graphql-request";
-import { useState } from "react";
+import { request } from "graphql-request";
 import { JobList } from "../components/JobList/JobList";
 import {
   endpoint,
@@ -15,15 +14,11 @@ import { useGetJobs } from "../services/useGetJobs";
 import { useFilter } from "../hooks/useFilter";
 
 const Home: NextPage = () => {
-  // const { data } = useQuery({ queryKey: ["posts"], queryFn: getPosts });
   const jobs = useGetJobs(JOBS_KEY);
   const { filter, handleFilterChange } = useFilter();
 
-  // if (jobs.isLoading) return <div>Loading...</div>;
   if (jobs.error instanceof Error) return <pre>{jobs.error.message}</pre>;
   console.log(jobs.data);
-
-  // const featuredJobs = data.jobs.slice(0, 5);
 
   return (
     <div>
