@@ -8,7 +8,6 @@ import { useGetCities } from "../../services/useGetCities";
 export const DebouncedSearch = ({}) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const { debouncedTerm, isLoading } = useDebounce(searchTerm, 1000);
-
   const queryData = useGetCities(CITIES_KEY);
 
   if (queryData.error instanceof Error)
@@ -41,7 +40,7 @@ export const DebouncedSearch = ({}) => {
           ))}
       </div>
 
-      <div>{isLoading === true ? <div>Loading</div> : debouncedTerm}</div>
+      <div>{isLoading ? <div>Loading</div> : debouncedTerm}</div>
       <div>Latest</div>
     </div>
   );

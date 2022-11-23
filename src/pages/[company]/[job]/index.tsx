@@ -10,9 +10,47 @@ import {
 } from "../../../services/queries";
 import { IJobsData } from "../../../services/useGetJobs";
 
+// interface IIndex {
+//   ui: {
+//     section1: {
+//       dummyData: 1;
+//       sharedData: {};
+
+//       products: [
+//         {
+//           title: string;
+//           img: { src: string };
+//           price: {};
+//         }
+//       ];
+//     };
+//     section2: 2;
+//   };
+//   state: {
+//     products: [
+//       {
+//         id: 13213;
+//         discound_id: 1213123;
+//         rerefer: 12321;
+//         title: string;
+//         img: { src: string };
+//         price: {};
+//       }
+//     ];
+//   };
+// }
+
 export const index = (props: any) => {
+  // dispatch({ type: SET_PRODUCTS, payload: props.sharedData.products });
+
   const data = props.data;
-  return <div>{data[0].slug}</div>;
+  return (
+    <div>
+      {data[0].slug}
+
+      {/* <Section1 {...props.section1} /> */}
+    </div>
+  );
 };
 export default index;
 
@@ -46,30 +84,30 @@ export async function getStaticProps(context: any) {
   };
 }
 
-export async function getStaticPaths() {
-  const queryClient = new QueryClient();
+// export const getStaticPaths = staticPathsFactory<IJobsData>({ keys: [JOBS_KEY, CITIES], preprocessor: preprocessor })
 
-  await queryClient.prefetchQuery([JOBS_KEY], () => {
-    return request(endpoint, ALL_JOBS);
-  });
-  await queryClient.prefetchQuery([CITIES_KEY], () => {
-    return request(endpoint, CITIES);
-  });
+// const queryClient = new QueryClient();
 
-  const jobsData = queryClient.getQueryData<IJobsData>([JOBS_KEY]);
-  if (!jobsData) return;
+// await queryClient.prefetchQuery([JOBS_KEY], () => {
+//   return request(endpoint, ALL_JOBS);
+// });
+// await queryClient.prefetchQuery([CITIES_KEY], () => {
+//   return request(endpoint, CITIES);
+// });
 
-  const paths = jobsData.jobs.map((city) => {
-    return {
-      params: {
-        company: city.company.slug,
-        job: city.slug,
-      },
-    };
-  });
+// const jobsData = queryClient.getQueryData<IJobsData>([JOBS_KEY]);
+// if (!jobsData) return;
 
-  return {
-    paths: paths,
-    fallback: false,
-  };
-}
+// const paths = jobsData.jobs.map((city) => {
+//   return {
+//     params: {
+//       company: city.company.slug,
+//       job: city.slug,
+//     },
+//   };
+// });
+
+// return {
+//   paths: paths,
+//   fallback: false,
+// };

@@ -47,21 +47,21 @@ export interface IJobsData {
   jobs: Array<IJob>;
 }
 
-export interface IJobsQuery {
-  data: {
-    jobs: Array<IJob>;
-  };
+export type TJobsQuery = Array<IJob>;
 
-  error: Error;
-  isError: boolean;
-  isLoading: boolean;
-}
+// gql
+
+// fetcher
+
+const getAllJobs = () => request(endpoint, ALL_JOBS) as Promise<TJobsQuery>;
+
+// useGetJobs
 
 export const useGetJobs = (jobsKey: string) => {
-  const jobs = useQuery<IJobsQuery | Error>({
+  const jobs = useQuery<TJobsQuery>({
     queryKey: [jobsKey],
     queryFn: () => {
-      return request(endpoint, ALL_JOBS);
+      return getAllJobs();
     },
   });
   return jobs;
