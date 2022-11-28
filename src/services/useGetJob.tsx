@@ -36,6 +36,10 @@ export interface IName {
   name: string;
 }
 
+export interface IJobDetailedQuery {
+  job: IJobDetailed;
+}
+
 export interface IJobDetailed {
   id: string;
   title: string;

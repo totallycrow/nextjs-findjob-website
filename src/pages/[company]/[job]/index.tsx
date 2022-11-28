@@ -3,29 +3,37 @@ import request, { gql } from "graphql-request";
 import React from "react";
 import {
   ALL_JOBS,
-  CITIES,
-  CITIES_KEY,
   JOBS_KEY,
   endpoint,
   JOB_KEY,
 } from "../../../services/queries";
-import { IJobsData } from "../../../services/useGetJobs";
-import { useGetJob, buildJobQuery } from "../../../services/useGetJob";
+import { IJobsData, IName } from "../../../services/useGetJobs";
+import { buildJobQuery, IJobDetailedQuery } from "../../../services/useGetJob";
+import { GetStaticProps } from "next";
+import { ParsedUrlQuery } from "querystring";
 
 interface IJobPage {
   dehydratedState: DehydratedState;
   sharedData: {
     id: string;
-    tags: string[];
+    tags: Array<IName>;
     slug: string;
   };
   sectionHeading: {
     title: string;
-    company: string;
+    company: {
+      name: string;
+      slug: string;
+    };
   };
   sectionBody: {
     description: string;
   };
+}
+
+interface IJobPageNoData {
+  dehydratedState: DehydratedState;
+  data: ["NO_DATA"];
 }
 
 // interface IIndex {
@@ -58,27 +66,26 @@ interface IJobPage {
 //   };
 // }
 
-export const JobPage = (props: any) => {
+export const JobPage = (props: IJobPage) => {
   // dispatch({ type: SET_PRODUCTS, payload: props.sharedData.products });
   console.log(props);
 
-  const data = props.data;
-  return (
-    <div>
-      {props.sectionHeading.title}
-
-      {/* <Section1 {...props.section1} /> */}
-    </div>
-  );
+  return <div>{props.sectionHeading.title}</div>;
 };
 export default JobPage;
 
+interface Params extends ParsedUrlQuery {
+  company: string;
+  job: string;
+}
+
 // ****************** STATIC PROPS ******************
-export async function getStaticProps(context: any) {
+export const getStaticProps: GetStaticProps<IJobPage, Params> = async (
+  context
+) => {
   const queryClient = new QueryClient();
   const params = context.params!;
 
-  const { company } = params;
   const jobSlug = params.job;
   const companySlug = params.company;
 
@@ -89,17 +96,34 @@ export async function getStaticProps(context: any) {
     return request(endpoint, jobQuery);
   });
 
-  const jobsData = queryClient.getQueryData([JOB_KEY]);
+  const jobsData = queryClient.getQueryData<IJobDetailedQuery>([JOB_KEY]);
 
   console.log("???????????????????????????????????");
   console.log(context);
   console.log(jobsData);
 
   if (!jobsData)
+    //   return {
+    //     props: {
+    //       dehydratedState: dehydrate(queryClient),
+    //       data: ["NO_DATA"],
+    //     },
+    //   };
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
-        data: ["NO_DATA"],
+        sharedData: {
+          id: "",
+          tags: [{ name: "", slug: "" }],
+          slug: "",
+        },
+        sectionHeading: {
+          title: "",
+          company: { name: "", slug: "" },
+        },
+        sectionBody: {
+          description: "",
+        },
       },
     };
 
@@ -144,7 +168,7 @@ export async function getStaticProps(context: any) {
       },
     },
   };
-}
+};
 
 // ****************** STATIC PATHS ******************
 

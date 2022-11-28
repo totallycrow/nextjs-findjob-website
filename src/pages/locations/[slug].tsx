@@ -13,7 +13,7 @@ import { IJobsData, IJob } from "../../services/useGetJobs";
 import { ICityData } from "../../services/useGetCities";
 import { GetStaticProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useGetJob } from "../../services/useGetJob";
+
 
 const City: React.FC<Props> = (props) => {
   const filteredData = props.jobsInCity;
