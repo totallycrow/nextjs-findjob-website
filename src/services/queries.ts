@@ -33,6 +33,7 @@ export const ALL_JOBS = gql`
   }
 `;
 
+export const JOB_KEY = "job";
 export const JOB_QUERY = gql`
   {
     jobs {

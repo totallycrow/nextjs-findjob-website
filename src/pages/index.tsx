@@ -18,7 +18,7 @@ const Home: NextPage = () => {
   const { filter, handleFilterChange } = useFilter();
 
   if (jobs.error instanceof Error) return <pre>{jobs.error.message}</pre>;
-  console.log(jobs.data);
+  // console.log(jobs.data);
 
   return (
     <div>
