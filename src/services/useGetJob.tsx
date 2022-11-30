@@ -5,6 +5,7 @@ import { request, gql } from "graphql-request";
 import { useState } from "react";
 import { JobList } from "../components/JobList/JobList";
 import { endpoint, CITIES, ALL_JOBS } from "../services/queries";
+import { IJob } from "./useGetJobs";
 
 // {
 //     jobs {

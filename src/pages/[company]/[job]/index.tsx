@@ -11,6 +11,7 @@ import { IJobsData, IName } from "../../../services/useGetJobs";
 import { buildJobQuery, IJobDetailedQuery } from "../../../services/useGetJob";
 import { GetStaticProps } from "next";
 import { ParsedUrlQuery } from "querystring";
+import { JobItem } from "../../../components/JobItem/JobItem";
 
 interface IJobPage {
   dehydratedState: DehydratedState;
@@ -31,53 +32,23 @@ interface IJobPage {
   };
 }
 
-interface IJobPageNoData {
-  dehydratedState: DehydratedState;
-  data: ["NO_DATA"];
-}
-
-// interface IIndex {
-//   ui: {
-//     section1: {
-//       dummyData: 1;
-//       sharedData: {};
-
-//       products: [
-//         {
-//           title: string;
-//           img: { src: string };
-//           price: {};
-//         }
-//       ];
-//     };
-//     section2: 2;
-//   };
-//   state: {
-//     products: [
-//       {
-//         id: 13213;
-//         discound_id: 1213123;
-//         rerefer: 12321;
-//         title: string;
-//         img: { src: string };
-//         price: {};
-//       }
-//     ];
-//   };
-// }
-
-export const JobPage = (props: IJobPage) => {
-  // dispatch({ type: SET_PRODUCTS, payload: props.sharedData.products });
-  console.log(props);
-
-  return <div>{props.sectionHeading.title}</div>;
-};
-export default JobPage;
-
 interface Params extends ParsedUrlQuery {
   company: string;
   job: string;
 }
+
+export const JobPage = (props: IJobPage) => {
+  return (
+    <div>
+      <JobItem
+        heading={props.sectionHeading.title}
+        companyName={props.sectionHeading.company.name}
+        description={props.sectionBody.description}
+      />
+    </div>
+  );
+};
+export default JobPage;
 
 // ****************** STATIC PROPS ******************
 export const getStaticProps: GetStaticProps<IJobPage, Params> = async (
@@ -90,7 +61,6 @@ export const getStaticProps: GetStaticProps<IJobPage, Params> = async (
   const companySlug = params.company;
 
   const jobQuery = buildJobQuery(companySlug, jobSlug);
-  console.log(jobQuery);
 
   await queryClient.prefetchQuery([JOB_KEY], () => {
     return request(endpoint, jobQuery);
@@ -98,22 +68,12 @@ export const getStaticProps: GetStaticProps<IJobPage, Params> = async (
 
   const jobsData = queryClient.getQueryData<IJobDetailedQuery>([JOB_KEY]);
 
-  console.log("???????????????????????????????????");
-  console.log(context);
-  console.log(jobsData);
-
   if (!jobsData)
-    //   return {
-    //     props: {
-    //       dehydratedState: dehydrate(queryClient),
-    //       data: ["NO_DATA"],
-    //     },
-    //   };
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
         sharedData: {
-          id: "",
+          id: "NO_DATA",
           tags: [{ name: "", slug: "" }],
           slug: "",
         },
@@ -126,6 +86,19 @@ export const getStaticProps: GetStaticProps<IJobPage, Params> = async (
         },
       },
     };
+
+  const { id, tags, slug, title, company, description } = jobsData.job;
+
+  //   id: jobsData.job.id,
+  //   tags: jobsData.job.tags,
+  //   slug: jobsData.job.slug,
+  // },
+  // sectionHeading: {
+  //   title: jobsData.job.title,
+  //   company: jobsData.job.company,
+  // },
+  // sectionBody: {
+  //   description: jobsData.job.description,
 
   // const filteredData = jobsData.jobs.filter((job) => {
   //   if (job.company.slug === company && job.slug === jobSlug) {
@@ -155,16 +128,16 @@ export const getStaticProps: GetStaticProps<IJobPage, Params> = async (
     props: {
       dehydratedState: dehydrate(queryClient),
       sharedData: {
-        id: jobsData.job.id,
-        tags: jobsData.job.tags,
-        slug: jobsData.job.slug,
+        id: id,
+        tags: tags,
+        slug: slug,
       },
       sectionHeading: {
-        title: jobsData.job.title,
-        company: jobsData.job.company,
+        title: title,
+        company: company,
       },
       sectionBody: {
-        description: jobsData.job.description,
+        description: description,
       },
     },
   };
