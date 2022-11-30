@@ -89,41 +89,6 @@ export const getStaticProps: GetStaticProps<IJobPage, Params> = async (
 
   const { id, tags, slug, title, company, description } = jobsData.job;
 
-  //   id: jobsData.job.id,
-  //   tags: jobsData.job.tags,
-  //   slug: jobsData.job.slug,
-  // },
-  // sectionHeading: {
-  //   title: jobsData.job.title,
-  //   company: jobsData.job.company,
-  // },
-  // sectionBody: {
-  //   description: jobsData.job.description,
-
-  // const filteredData = jobsData.jobs.filter((job) => {
-  //   if (job.company.slug === company && job.slug === jobSlug) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // });
-
-  // interface IJobPage {
-  //   dehydratedState: DehydratedState;
-  //   sharedData: {
-  //     id: string;
-  //     tags: string[];
-  //     slug: string;
-  //   };
-  //   sectionHeading: {
-  //     title: string;
-  //     company: string;
-  //   };
-  //   sectionBody: {
-  //     description: string;
-  //   };
-  // }
-
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
