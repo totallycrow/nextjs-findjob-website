@@ -14,7 +14,6 @@ import { ICityData } from "../../services/useGetCities";
 import { GetStaticProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 
-
 const City: React.FC<Props> = (props) => {
   const filteredData = props.jobsInCity;
   const slug = props.slug;
@@ -63,11 +62,16 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (
   await queryClient.prefetchQuery([JOBS_KEY], () => {
     return request(endpoint, ALL_JOBS);
   });
-  await queryClient.prefetchQuery([CITIES_KEY], () => {
-    return request(endpoint, CITIES);
-  });
   const jobsData = queryClient.getQueryData<IJobsData>([JOBS_KEY]);
-  if (!jobsData) return;
+
+  if (!jobsData)
+    return {
+      props: {
+        jobsInCity: [],
+        slug: slug,
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
 
   const filteredData = jobsData.jobs.filter((job) => {
     if (job.cities[0] === undefined) return false;
